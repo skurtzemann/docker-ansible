@@ -1,18 +1,19 @@
-FROM alpine:3.5
+FROM alpine:3.6
 
-RUN apk add --update \
+# Common tools from apline packages
+RUN \
+    # Define tagged repositories
+    echo '@edge http://nl.alpinelinux.org/alpine/edge/main' >> /etc/apk/repositories && \
+    #
+    apk add --update \
     ca-certificates \
     bash \
     wget \
     py-pip \
-    ansible
+    ansible@edge && \
+    # Fix for paramiko import problem
+    pip install packaging
 
-ENV TI_VER 0.7-pre
-RUN \
-    wget -q -O /tmp/ti.zip https://github.com/adammck/terraform-inventory/releases/download/v${TI_VER}/terraform-inventory_v${TI_VER}_linux_amd64.zip && \
-    unzip /tmp/ti.zip -d /usr/local/bin/ && \
-    chmod +x /usr/local/bin/terraform-inventory && \
-    rm -f /tmp/ti.zip
 
 RUN \
     mkdir -p /root/.ssh/; touch /root/.ssh/known_hosts
